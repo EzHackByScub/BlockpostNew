@@ -10,4 +10,5 @@ class Functions
 {
 public:
 	static  app::PlayerData* GetPlayerData(int i);
+	static void nopBytes(uintptr_t address, int size);
 };

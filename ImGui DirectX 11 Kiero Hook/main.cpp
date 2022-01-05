@@ -1,6 +1,7 @@
 #include "includes.h"
 #include "framework/il2cpp-init.h"
 #include "Cheat.h"
+#include "Functions.h"
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Present oPresent;
@@ -28,6 +29,8 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 
 bool init = false;
+bool menushow = true;
+int tabb = 0;
 HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
 	if (!init)
@@ -55,11 +58,40 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	Cheat::Start();
+	if (GetAsyncKeyState(VK_INSERT) & 1)
+		menushow = !menushow;
+	if (menushow)
+	{
+		ImGui::Begin("SCUBUS HACK");
+		if (ImGui::Button(("WallHack"), ImVec2(100.f, 0.f)))
+			tabb = 0;
+		ImGui::SameLine(0.f, 2.f);
+		if (ImGui::Button(("AimBot"), ImVec2(100.f, 0.f)))
+			tabb = 1;
+		ImGui::SameLine(0.f, 2.f);
+		if (ImGui::Button(("Misc"), ImVec2(100.f, 0.f)))
+			tabb = 2;
+		ImGui::SameLine(0.f, 2.f);
+		if (ImGui::Button(("Colors"), ImVec2(100.f, 0.f)))
+			tabb = 3;
+		if (tabb == 0)
+		{
+			ImGui::Checkbox("WallHack ", &Cheat::wallhackactive);
+			ImGui::Checkbox("TeamCheck", &Cheat::teamcheck);
+			ImGui::Checkbox("Check SpawnProtect", &Cheat::spawnprotectcheck);
+		}
+		if (tabb == 2)
+		{
+			ImGui::Checkbox("Granade Hack ", &Cheat::attackspecialhook);
+		}
+		if (tabb == 3)
+		{
+			ImGui::ColorEdit4("WallHack Color", Cheat::colorWh);
+			ImGui::ColorEdit4("WallHack Spawn Protect Color", Cheat::colorWhspwp);
+		}
+		ImGui::End();
+	}
 
-	ImGui::Begin("SCUBUS HACK");
-	ImGui::Checkbox("WallHack",&Cheat::wallhackactive);
-	ImGui::Checkbox("TeamCheck", &Cheat::teamcheck);
-	ImGui::End();
 
 	ImGui::Render();
 
@@ -97,6 +129,7 @@ BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
+		Functions::nopBytes(reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll")) + 0x2D9B16, 7); // insert crash bypass
 		init_il2cpp();
 		DisableThreadLibraryCalls(hMod);
 		CreateThread(nullptr, 0, MainThread, hMod, 0, nullptr);
