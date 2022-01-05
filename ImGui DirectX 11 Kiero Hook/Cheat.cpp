@@ -23,12 +23,15 @@ void Cheat::AimBotStart()
         {
             if (!GetAsyncKeyState(VK_LSHIFT)) break;
             if (!enemy) break;
+            app::Vector3 enemyheadloc = app::Transform_get_position(app::GameObject_get_transform(enemy->fields.goHead, nullptr), nullptr);
             app::Camera* currenctcam = (*app::Controll__TypeInfo)->static_fields->csCam;
             if (!currenctcam) break;
             app::Vector3 curcamerapos = app::Transform_get_position(app::Component_1_get_transform((app::Component_1*)currenctcam, nullptr), nullptr);
-            app::Vector2 angletoTarget = Functions::GetAndAngleToTarget(curcamerapos,enemy->fields.currPos);
+
+            app::Vector2 angletoTarget = Functions::GetAndAngleToTarget(curcamerapos, enemy->fields.currPos);
             (*app::Controll__TypeInfo)->static_fields->ry = angletoTarget.x;
             (*app::Controll__TypeInfo)->static_fields->rx = angletoTarget.y;
+
         }
     }
 }
@@ -71,8 +74,15 @@ int attackspecial(app::Client* a1, app::Vector3 a2, app::Vector3 a3, float a4)
     if(!enemy)
         return origsend_attackspecialfunc(a1, a2, a3, a4);
 }
+void FreeCam()
+{
+    if(GetAsyncKeyState(0x58) & 1) // X key
+    (*app::Controll__TypeInfo)->static_fields->freefly = !(*app::Controll__TypeInfo)->static_fields->freefly;
+}
 void Cheat::FunctionsStart()
 {
+    if (Cheat::FreeCamactive)
+        FreeCam();
     if (attackspecialhook)
     {
         if (!hooked)

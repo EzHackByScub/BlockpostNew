@@ -87,6 +87,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		if (tabb == 2)
 		{
 			ImGui::Checkbox("Granade Hack ", &Cheat::attackspecialhook);
+			ImGui::Checkbox("Free Cam", &Cheat::FreeCamactive);
 		}
 		if (tabb == 3)
 		{

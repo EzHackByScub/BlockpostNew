@@ -11,6 +11,7 @@ public:
 	inline static bool spawnprotectcheck;
 	inline static bool attackspecialhook;
 	inline static bool AimBotStartactive;
+	inline static bool FreeCamactive;
 	inline static int width;
 	inline static int height;
 	inline static float colorWh[4] = { 0.780f, 0.031f, 0.756f,1.0f };
