@@ -6,7 +6,32 @@
 typedef int(__cdecl* send_attackspecialfunc)(app::Client* a1, app::Vector3 a2, app::Vector3 a3, float a4);
 send_attackspecialfunc origsend_attackspecialfunc;
 send_attackspecialfunc attackspecialaddr = send_attackspecialfunc(reinterpret_cast<std::uintptr_t>(GetModuleHandle(TEXT("GameAssembly.dll"))) + 0x00157D10);
+bool hooked;
 
+void Cheat::AimBotStart()
+{
+    if (!Cheat::AimBotStartactive) return;
+    for (int i = 0; i < 40; i++) 
+    {
+        app::PlayerData* enemy = Functions::GetPlayerData(i);
+        if (!enemy) continue;
+        if (teamcheck)
+        {
+            if (enemy->fields.team == (*app::Controll__TypeInfo)->static_fields->pl->fields.team) continue;
+        }     
+        while (enemy->fields.bstate != 5)
+        {
+            if (!GetAsyncKeyState(VK_LSHIFT)) break;
+            if (!enemy) break;
+            app::Camera* currenctcam = (*app::Controll__TypeInfo)->static_fields->csCam;
+            if (!currenctcam) break;
+            app::Vector3 curcamerapos = app::Transform_get_position(app::Component_1_get_transform((app::Component_1*)currenctcam, nullptr), nullptr);
+            app::Vector2 angletoTarget = Functions::GetAndAngleToTarget(curcamerapos,enemy->fields.currPos);
+            (*app::Controll__TypeInfo)->static_fields->ry = angletoTarget.x;
+            (*app::Controll__TypeInfo)->static_fields->rx = angletoTarget.y;
+        }
+    }
+}
 void ESP(app::PlayerData* enemy, app::Camera* currenctcam)
 {
     app::Vector3 enemyheadloc = app::Transform_get_position(app::GameObject_get_transform(enemy->fields.goHead, nullptr),nullptr);
@@ -46,13 +71,29 @@ int attackspecial(app::Client* a1, app::Vector3 a2, app::Vector3 a3, float a4)
     if(!enemy)
         return origsend_attackspecialfunc(a1, a2, a3, a4);
 }
-bool hooked;
-void Cheat::Start()
+void Cheat::FunctionsStart()
 {
-    if (!height)
-        height = app::Screen_get_height(nullptr);
-    if (!width)
-        width = app::Screen_get_width(nullptr);
+    if (attackspecialhook)
+    {
+        if (!hooked)
+        {
+            MH_CreateHook(attackspecialaddr, &attackspecial, reinterpret_cast<void**>(&origsend_attackspecialfunc));
+            MH_EnableHook(attackspecialaddr);
+            hooked = true;
+        }
+    }
+    else
+    {
+        if (hooked)
+        {
+            MH_DisableHook(attackspecialaddr);
+            hooked = false;
+        }
+    }
+}
+void Cheat::RenderWallHack()
+{
+    
     app::Camera* currenctcam = (*app::Controll__TypeInfo)->static_fields->csCam;
     if (!currenctcam) return;
     for (int i = 0; i < 40; i++)
@@ -67,22 +108,6 @@ void Cheat::Start()
         if (enemy->fields.bstate == 5) continue;
         if (wallhackactive)
             ESP(enemy,currenctcam);
-        if (attackspecialhook)
-        {
-            if (!hooked)
-            {
-                MH_CreateHook(attackspecialaddr, &attackspecial, reinterpret_cast<void**>(&origsend_attackspecialfunc));
-                MH_EnableHook(attackspecialaddr);
-                hooked = true;
-            }
-        }
-        else
-        {
-            if (hooked)
-            {
-                MH_DisableHook(attackspecialaddr);
-                hooked = false;
-            }
-        }       
+       
     }
 }

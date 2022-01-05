@@ -57,7 +57,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	Cheat::Start();
+	Cheat::RenderWallHack();
 	if (GetAsyncKeyState(VK_INSERT) & 1)
 		menushow = !menushow;
 	if (menushow)
@@ -79,6 +79,10 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox("WallHack ", &Cheat::wallhackactive);
 			ImGui::Checkbox("TeamCheck", &Cheat::teamcheck);
 			ImGui::Checkbox("Check SpawnProtect", &Cheat::spawnprotectcheck);
+		}
+		if (tabb == 1)
+		{
+			ImGui::Checkbox("Aim Bot", &Cheat::AimBotStartactive);
 		}
 		if (tabb == 2)
 		{
@@ -116,14 +120,22 @@ DWORD WINAPI MainThread(LPVOID lpReserved)
 	} while (!init_hook);
 	return TRUE;
 }
-//DWORD WINAPI FunctTread(HMODULE hMod)
-//{
-//	while (true)
-//	{
-//
-//	}
-//	FreeLibraryAndExitThread(hMod, 0);
-//}
+DWORD WINAPI FunctTread(HMODULE hMod)
+{
+	while (true)
+	{
+		Cheat::FunctionsStart();
+	}
+	FreeLibraryAndExitThread(hMod, 0);
+}
+DWORD WINAPI AimBotTread(HMODULE hMod)
+{
+	while (true)
+	{
+		Cheat::AimBotStart();
+	}
+	FreeLibraryAndExitThread(hMod, 0);
+}
 BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason)
@@ -131,9 +143,12 @@ BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
 	case DLL_PROCESS_ATTACH:
 		Functions::nopBytes(reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll")) + 0x2D9B16, 7); // insert crash bypass
 		init_il2cpp();
+		Cheat::height = app::Screen_get_height(nullptr);
+		Cheat::width = app::Screen_get_width(nullptr);
 		DisableThreadLibraryCalls(hMod);
 		CreateThread(nullptr, 0, MainThread, hMod, 0, nullptr);
-		//StartThread(nullptr, (LPTHREAD_START_ROUTINE)FunctTread);
+		StartThread(nullptr, (LPTHREAD_START_ROUTINE)FunctTread);
+		StartThread(nullptr, (LPTHREAD_START_ROUTINE)AimBotTread);
 		break;
 	case DLL_PROCESS_DETACH:
 		kiero::shutdown();
