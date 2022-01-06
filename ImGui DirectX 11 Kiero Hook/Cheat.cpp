@@ -18,6 +18,11 @@ void raycast(int a1)
     {
         app::PlayerData* enemy = Functions::GetPlayerData(i);
         if (!enemy) continue;
+        if (enemy->fields.spawnprotect)
+        {
+            enemy->fields.leg_limit = 46;
+            continue;
+        }       
         app::Vector3 enemyheadloc = app::Transform_get_position(app::GameObject_get_transform(enemy->fields.goHead, nullptr), nullptr);
         app::Vector3 curcamerapos = app::Transform_get_position(app::Component_1_get_transform((app::Component_1*)currenctcam, nullptr), nullptr);
         if (app::Physics_Linecast_1(enemyheadloc, curcamerapos, &hit,nullptr))
