@@ -18,6 +18,6 @@ public:
 	inline static int width;
 	inline static int height;
 	inline static float colorWh[4] = { 1, 0, 0,1 };
-	inline static float colorWhspwp[4] = { 0, 0, 1,0 };
+	inline static float colorWhspwp[4] = { 0, 0, 1,1 };
 	inline static float colorWhvisible[4] = { 0, 1, 0,1};
 };

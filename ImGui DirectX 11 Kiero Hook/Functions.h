@@ -13,4 +13,5 @@ public:
 	static  app::PlayerData* GetPlayerData(int i);
 	static void nopBytes(uintptr_t address, int size);
 	static app::Vector2 GetAndAngleToTarget(app::Vector3 startPOS, app::Vector3 endPOS);
+	static void retByte(uintptr_t address);
 };

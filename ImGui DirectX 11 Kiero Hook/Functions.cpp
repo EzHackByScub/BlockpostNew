@@ -4,10 +4,12 @@
 #include <iostream>
 app::PlayerData* Functions::GetPlayerData(int i)
 {
-	PlayerDataArray* pdataA = (PlayerDataArray*)(*app::PLH__TypeInfo)->static_fields->player;
-	if (!pdataA->Player[i])
-		return NULL;
-	return pdataA->Player[i];
+	app::PlayerData__Array* pdataA =(*app::PLH__TypeInfo)->static_fields->player;
+    if ((pdataA) && (pdataA->vector))
+    {
+        return pdataA->vector[i];
+    }
+	return NULL;
 }
 void Functions::nopBytes(uintptr_t address, int size)
 {
@@ -18,6 +20,13 @@ void Functions::nopBytes(uintptr_t address, int size)
         BYTE* Patched = reinterpret_cast<BYTE*>(address + i);
         *Patched = 0x90;
     }
+}
+void Functions::retByte(uintptr_t address)
+{
+    DWORD OldProtection;
+    VirtualProtect((LPVOID)address,4, 0x40, &OldProtection);
+    BYTE* Patched = reinterpret_cast<BYTE*>(address);
+    *Patched = 0xC3;
 }
 app::Vector2 Functions::GetAndAngleToTarget(app::Vector3 startPOS, app::Vector3 endPOS)
 {

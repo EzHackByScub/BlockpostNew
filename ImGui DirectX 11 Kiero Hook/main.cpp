@@ -147,10 +147,8 @@ void initutl()
 	init_il2cpp();
 	uintptr_t baseaddr = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
 	Functions::nopBytes(baseaddr + 0x2D9B16, 7); // insert crash bypass
-	uintptr_t sendwinfo = baseaddr + 0x159730;
-	VirtualProtect((LPVOID)sendwinfo, 4, 0x40, &OldProtection);
-	BYTE* sendwinfoscam = reinterpret_cast<BYTE*>(sendwinfo);
-	*sendwinfoscam = 0xC3;
+	//Functions::nopBytes(reinterpret_cast<uintptr_t>(GetModuleHandle("UnityPlayer.dll")) + 0x9AE7C9, 3); // freecam nospreed
+	Functions::retByte(baseaddr + 0x159730); //sendwinfo scam
 	Cheat::height = app::Screen_get_height(nullptr);
 	Cheat::width = app::Screen_get_width(nullptr);
 	return;
