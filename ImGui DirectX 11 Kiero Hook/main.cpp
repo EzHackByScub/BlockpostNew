@@ -90,6 +90,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox("Free Cam", &Cheat::FreeCamactive);
 			ImGui::Checkbox("Visible Check", &Cheat::visiblecheck);
 			ImGui::Checkbox("Max Scoup", &Cheat::maxscoupactive);
+			ImGui::Checkbox("Crash Players", &Cheat::CrashPlayersactive);
 		}
 		if (tabb == 3)
 		{
@@ -140,16 +141,27 @@ DWORD WINAPI AimBotTread(HMODULE hMod)
 	}
 	FreeLibraryAndExitThread(hMod, 0);
 }
+void initutl()
+{
+	DWORD OldProtection;
+	init_il2cpp();
+	uintptr_t baseaddr = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
+	Functions::nopBytes(baseaddr + 0x2D9B16, 7); // insert crash bypass
+	uintptr_t sendwinfo = baseaddr + 0x159730;
+	VirtualProtect((LPVOID)sendwinfo, 4, 0x40, &OldProtection);
+	BYTE* sendwinfoscam = reinterpret_cast<BYTE*>(sendwinfo);
+	*sendwinfoscam = 0xC3;
+	Cheat::height = app::Screen_get_height(nullptr);
+	Cheat::width = app::Screen_get_width(nullptr);
+	return;
+}
 BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
 {
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Functions::nopBytes(reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll")) + 0x2D9B16, 7); // insert crash bypass
-		init_il2cpp();
-		Cheat::height = app::Screen_get_height(nullptr);
-		Cheat::width = app::Screen_get_width(nullptr);
 		DisableThreadLibraryCalls(hMod);
+		initutl();
 		CreateThread(nullptr, 0, MainThread, hMod, 0, nullptr);
 		StartThread(nullptr, (LPTHREAD_START_ROUTINE)FunctTread);
 		StartThread(nullptr, (LPTHREAD_START_ROUTINE)AimBotTread);

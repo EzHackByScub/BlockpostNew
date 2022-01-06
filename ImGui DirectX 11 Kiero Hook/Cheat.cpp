@@ -9,6 +9,43 @@ send_attackspecialfunc attackspecialaddr = send_attackspecialfunc(reinterpret_ca
 hookRadarOnGui hookRadar;
 send_attackspecialfunc origsend_attackspecialfunc;
 bool hooked;
+int val;
+void CrashPlayers()
+{
+    app::List_1_Player_WeaponInv_* WeaponList = (*app::GUIInv__TypeInfo)->static_fields->wlist;
+    if (!Cheat::CrashPlayersactive)
+    {
+        if (val)
+        {
+            if ((WeaponList) && (WeaponList->fields._items) && (WeaponList->fields._items->vector))
+            {
+                app::WeaponInv* WeaponInv = WeaponList->fields._items->vector[val];
+                if (!WeaponInv) return;
+                app::WeaponInfo* wi = WeaponInv->fields.wi;
+                wi->fields.id = 69;
+            }
+        }
+    }
+    else
+    {
+        if ((WeaponList) && (WeaponList->fields._items) && (WeaponList->fields._items->vector))
+        {
+            for (int index = 0; index < WeaponList->fields._size; index++)
+            {
+                app::WeaponInv* WeaponInv = WeaponList->fields._items->vector[index];
+                if (!WeaponInv) continue;
+                app::WeaponInfo* wi = WeaponInv->fields.wi;
+                if (!wi) continue;
+                if (wi->fields.id == 69)
+                {
+                    wi->fields.id = 107;
+                    val = index;
+                    break;
+                }
+            }
+        }
+    }   
+}
 void MaxScoup()
 {
     app::List_1_Player_WeaponInv_* WeaponList = (*app::GUIInv__TypeInfo)->static_fields->wlist;
@@ -171,7 +208,7 @@ void FreeCam()
 }
 void Cheat::FunctionsStart()
 {
-
+    CrashPlayers();
     if (!hookRadar)
     {
         MH_Initialize();
@@ -200,6 +237,7 @@ void Cheat::FunctionsStart()
     }
     if (maxscoupactive)
         MaxScoup();
+    
 }
 void Cheat::RenderWallHack()
 {
