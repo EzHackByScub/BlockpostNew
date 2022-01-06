@@ -205,7 +205,8 @@ int attackspecial(app::Client* a1, app::Vector3 a2, app::Vector3 a3, float a4)
 void FreeCam()
 {
     
-
+    uintptr_t transformscam = *(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(reinterpret_cast<uintptr_t>(GetModuleHandle(TEXT("GameAssembly.dll"))) + 0xB35C3C) + 0x5C) + 0x80);
+    if (!transformscam) return;
     uintptr_t  nospreedfreecamaddr = (*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(reinterpret_cast<uintptr_t>(GetModuleHandle(TEXT("GameAssembly.dll"))) + 0xB35C3C) + 0x5C) + 0x80) + 0x8) + 0x20) + 0xe8);
     int* nospreed = reinterpret_cast<int*>(nospreedfreecamaddr);
     *nospreed = 0;
