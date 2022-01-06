@@ -9,6 +9,20 @@ send_attackspecialfunc attackspecialaddr = send_attackspecialfunc(reinterpret_ca
 hookRadarOnGui hookRadar;
 send_attackspecialfunc origsend_attackspecialfunc;
 bool hooked;
+void MaxScoup()
+{
+    app::List_1_Player_WeaponInv_* WeaponList = (*app::GUIInv__TypeInfo)->static_fields->wlist;
+    if ((WeaponList) && (WeaponList->fields._items) && (WeaponList->fields._items->vector))
+    {
+        for (int index = 0; index < WeaponList->fields._size; index++)
+        {
+            app::WeaponInv* WeaponInv = WeaponList->fields._items->vector[index];
+            if (!WeaponInv) continue;
+            WeaponInv->fields.frags = 99999;
+        }
+    }
+    Cheat::maxscoupactive = false;
+}
 void raycast(int a1)
 {
     app::RaycastHit hit;
@@ -80,7 +94,7 @@ void Cheat::AimBotStart()
             if (!currenctcam) break;
             app::Vector3 curcamerapos = app::Transform_get_position(app::Component_1_get_transform((app::Component_1*)currenctcam, nullptr), nullptr);
 
-            app::Vector2 angletoTarget = Functions::GetAndAngleToTarget(curcamerapos, enemy->fields.currPos);
+            app::Vector2 angletoTarget = Functions::GetAndAngleToTarget(curcamerapos, enemyheadloc);
             (*app::Controll__TypeInfo)->static_fields->ry = angletoTarget.x;
             (*app::Controll__TypeInfo)->static_fields->rx = angletoTarget.y;
 
@@ -100,7 +114,7 @@ void ESP(app::PlayerData* enemy, app::Camera* currenctcam)
     if (Cheat::spawnprotectcheck)
     {
         if (enemy->fields.spawnprotect)
-            ImGui::GetBackgroundDrawList()->AddRect(ImVec2{ enemyheadscrpos.x - width,enemyheadscrpos.y }, ImVec2{ enemyscrpos.x + width,enemyscrpos.y }, ImColor{ Cheat::colorWhspwp[0],Cheat::colorWhspwp[1],Cheat::colorWhspwp[2],Cheat::colorWhspwp[3] }, 0, 15, 3);
+           ImGui::GetBackgroundDrawList()->AddRect(ImVec2{ enemyheadscrpos.x - width,enemyheadscrpos.y }, ImVec2{ enemyscrpos.x + width,enemyscrpos.y }, ImColor{ Cheat::colorWhspwp[0],Cheat::colorWhspwp[1],Cheat::colorWhspwp[2],Cheat::colorWhspwp[3] }, 0, 15, 3);
         if (!enemy->fields.spawnprotect)
         {
             if (Cheat::visiblecheck)
@@ -141,6 +155,7 @@ int attackspecial(app::Client* a1, app::Vector3 a2, app::Vector3 a3, float a4)
         enemy = Functions::GetPlayerData(i);
         if (!enemy) continue;
         if (enemy->fields.spawnprotect) continue;
+        if (enemy->fields.bstate == 5) continue;
         if (Cheat::teamcheck)
             if (enemy->fields.team == (*app::Controll__TypeInfo)->static_fields->pl->fields.team) continue;
         enemypos = enemy->fields.currPos;
@@ -183,12 +198,15 @@ void Cheat::FunctionsStart()
             hooked = false;
         }
     }
+    if (maxscoupactive)
+        MaxScoup();
 }
 void Cheat::RenderWallHack()
 {
 
     app::Camera* currenctcam = (*app::Controll__TypeInfo)->static_fields->csCam;
     if (!currenctcam) return;
+
     for (int i = 0; i < 40; i++)
     {
         app::PlayerData* enemy = Functions::GetPlayerData(i);
@@ -201,5 +219,6 @@ void Cheat::RenderWallHack()
         if (enemy->fields.bstate == 5) continue;
         if (wallhackactive)
             ESP(enemy, currenctcam);
+
     }
 }

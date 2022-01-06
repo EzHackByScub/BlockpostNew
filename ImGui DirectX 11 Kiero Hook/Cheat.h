@@ -13,6 +13,7 @@ public:
 	inline static bool AimBotStartactive;
 	inline static bool FreeCamactive;
 	inline static bool visiblecheck;
+	inline static bool maxscoupactive;
 	inline static int width;
 	inline static int height;
 	inline static float colorWh[4] = { 1, 0, 0,1 };

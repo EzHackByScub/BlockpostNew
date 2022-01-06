@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/il2cpp-appdata.h"
+
 class PlayerDataArray
 {
 public:
