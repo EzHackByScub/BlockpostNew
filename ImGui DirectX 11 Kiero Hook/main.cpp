@@ -94,6 +94,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		{
 			ImGui::ColorEdit4("WallHack Color", Cheat::colorWh);
 			ImGui::ColorEdit4("WallHack Spawn Protect Color", Cheat::colorWhspwp);
+			ImGui::ColorEdit4("WallHack Visible Color", Cheat::colorWhvisible);
 		}
 		ImGui::End();
 	}
