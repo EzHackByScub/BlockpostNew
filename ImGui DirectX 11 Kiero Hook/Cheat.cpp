@@ -201,12 +201,12 @@ int attackspecial(app::Client* a1, app::Vector3 a2, app::Vector3 a3, float a4)
     if (!enemy)
         return origsend_attackspecialfunc(a1, a2, a3, a4);
 }
-uintptr_t  nospreedfreecamaddr = (*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(reinterpret_cast<uintptr_t>(GetModuleHandle(TEXT("GameAssembly.dll"))) + 0xB35C3C) + 0x5C) + 0x80) + 0x8) + 0x20) + 0xe8);
+
 void FreeCam()
 {
     
 
-    
+    uintptr_t  nospreedfreecamaddr = (*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(reinterpret_cast<uintptr_t>(GetModuleHandle(TEXT("GameAssembly.dll"))) + 0xB35C3C) + 0x5C) + 0x80) + 0x8) + 0x20) + 0xe8);
     int* nospreed = reinterpret_cast<int*>(nospreedfreecamaddr);
     *nospreed = 0;
     if (GetAsyncKeyState(0x58) & 1) // X key
